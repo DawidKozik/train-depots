@@ -4,6 +4,7 @@
 #include <string>
 #include <compare>
 #include <utility>
+#include <deque>
 
 enum class WagonType {
     FIRST_CLASS,
@@ -251,7 +252,21 @@ private:
 };
 
 class Train {
-    // TODO
+public:
+    Train() = default;
+    explicit Train(Locomotive&& locomotive)
+            : locomotive_(std::move(locomotive), ) {}
+
+    explicit Train(Locomotive&& locomotive, std::initializer_list<Wagon> wagons)
+            : locomotive_(std::move(locomotive)) {
+                while (wagons_.size() < locomotive_.designation()) {
+
+                }
+            }
+private:
+    Locomotive locomotive_;
+    std::deque<Wagon> wagons_;
+    std::size_t seats_ = 0; 
 };
 
 class Depot {
