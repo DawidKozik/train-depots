@@ -1,7 +1,9 @@
 #include <cstddef>
 #include <ostream>
 #include <string_view>
+#include <string>
 #include <compare>
+#include <utility>
 
 enum class WagonType {
     FIRST_CLASS,
@@ -201,7 +203,54 @@ private:
 };
 
 class Locomotive {
-    // TODO
+public:
+    // Standard constructors
+    Locomotive() = default;
+
+    explicit Locomotive(std::string_view designation, std::size_t max_wagons)
+            : designation_(designation.empty() ? "?" : designation), 
+            max_wagons_(max_wagons) {}
+
+    // Moving constructor and assingning operator
+    Locomotive(Locomotive&& other) noexcept 
+            : designation_(std::exchange(other.designation_, {})),
+            max_wagons_(std::exchange(other.max_wagons_, 0)) {}
+
+    Locomotive& operator=(Locomotive&& other) noexcept { 
+        if (this == &other) {
+            return *this;
+        }
+
+        designation_ = std::exchange(other.designation_, {});
+        max_wagons_ = std::exchange(other.max_wagons_, 0);
+        return *this;
+    }
+
+    // Disabling copying
+    Locomotive(const Locomotive&) = delete;
+    Locomotive& operator=(const Locomotive&) = delete;
+
+    std::string_view designation() const noexcept {
+        return designation_;
+    }
+
+    std::size_t max_wagons() const noexcept {
+        return max_wagons_;
+    }
+
+    explicit operator bool() const noexcept {
+        return !designation_.empty();
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Locomotive& locomotive) {
+        if (locomotive.designation_.empty()){
+            return os << "brak lokomotywy";
+        }
+        return os << locomotive.designation_ << " (uciąg: " << locomotive.max_wagons_ << ")";
+    }
+private:
+    std::string designation_;
+    std::size_t max_wagons_ = 0;
 };
 
 class Train {
