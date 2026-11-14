@@ -38,12 +38,12 @@ namespace {
 
         Wagon w1{STANDARD_FIRST_CLASS};
         assert(w1.number() == 1);
-        assert(w1.series() == STANDARD_FIRST_CLASS);
+        assert(w1.series_() == STANDARD_FIRST_CLASS);
 
         // Kopiowanie buduje nowy wagon tej samej serii.
         Wagon w2{w1};
         assert(w2.number() == 2);
-        assert(w2.series() == w1.series());
+        assert(w2.series_() == w1.series_());
         assert(Wagon::in_service() == 2);
         assert(Wagon::ever_built() == 2);
 
@@ -59,7 +59,7 @@ namespace {
         assert(w4.number() == 3);
         w4 = w1;
         assert(w4.number() == 3);
-        assert(w4.series() == STANDARD_FIRST_CLASS);
+        assert(w4.series_() == STANDARD_FIRST_CLASS);
 
         // Przypisanie kopiujące do pustego obiektu buduje nowy wagon.
         w2 = w1;
