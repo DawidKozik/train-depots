@@ -1,7 +1,13 @@
 #include <cstddef>
 #include <ostream>
 #include <string_view>
+#include <string>
 #include <compare>
+#include <utility>
+#include <algorithm>
+#include <cassert>
+#include <initializer_list>
+#include <vector>
 
 enum class WagonType {
     FIRST_CLASS,
@@ -201,11 +207,157 @@ private:
 };
 
 class Locomotive {
-    // TODO
+public:
+    // Standard constructors
+    Locomotive() = default;
+
+    explicit Locomotive(std::string_view designation, std::size_t max_wagons)
+            : designation_(designation.empty() ? "?" : designation), 
+            max_wagons_(max_wagons) {}
+
+    // Moving constructor and assingning operator
+    Locomotive(Locomotive&& other) noexcept 
+            : designation_(std::exchange(other.designation_, {})),
+            max_wagons_(std::exchange(other.max_wagons_, 0)) {}
+
+    Locomotive& operator=(Locomotive&& other) noexcept { 
+        if (this == &other) {
+            return *this;
+        }
+
+        designation_ = std::exchange(other.designation_, {});
+        max_wagons_ = std::exchange(other.max_wagons_, 0);
+        return *this;
+    }
+
+    // Disabling copying
+    Locomotive(const Locomotive&) = delete;
+    Locomotive& operator=(const Locomotive&) = delete;
+
+    std::string_view designation() const noexcept {
+        return designation_;
+    }
+
+    std::size_t max_wagons() const noexcept {
+        return max_wagons_;
+    }
+
+    explicit operator bool() const noexcept {
+        return !designation_.empty();
+    }
+
+    friend std::ostream& operator<<(
+        std::ostream& os, 
+        const Locomotive& locomotive) {
+
+        if (locomotive.designation_.empty()){
+            return os << "brak lokomotywy";
+        }
+        return os << locomotive.designation_ << 
+            " (uciąg: " << locomotive.max_wagons_ << ")";
+    }
+private:
+    std::string designation_;
+    std::size_t max_wagons_ = 0;
 };
 
 class Train {
-    // TODO
+public:
+    // Standard empty constructor
+    Train() = default;
+
+    // Constructor with locomotive and wagons
+    explicit Train(Locomotive&& locomotive, 
+        std::initializer_list<Wagon> wagons = {})
+            : locomotive_(std::move(locomotive)) {
+        wagons_.reserve(std::min(wagons.size(), locomotive_.max_wagons()));
+        for (const auto& wagon : wagons) {
+            *this += wagon;
+        }
+    }
+
+    // Moving constructor
+    Train(Train&& other) noexcept
+            : locomotive_(std::move(other.locomotive_)),
+            wagons_(std::move(other.wagons_)),
+            seats_(std::exchange(other.seats_, 0)) {}
+    
+    // Moving assigning operator
+    Train& operator=(Train&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        locomotive_ = std::move(other.locomotive_);
+        wagons_ = std::move(other.wagons_);
+        seats_ = std::exchange(other.seats_, 0);
+        return *this;
+    }
+
+    // Disabling copying
+    Train(const Train&) = delete;
+    Train& operator=(const Train&) = delete;
+
+    // Adding wagons to the train for rvalue
+    Train& operator+=(const Wagon& wagon) {
+        // Check whether attaching the wagon is possible
+        if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
+            wagons_.push_back(wagon);
+            seats_ += wagon.series().seats();
+        }
+        return *this;
+    }
+
+    // Adding wagons to the train for lvalue
+    Train& operator+=(Wagon&& wagon) {
+        // Check whether attaching the wagon is possible
+        if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
+            const std::size_t wagon_seats = wagon.series().seats();
+            wagons_.push_back(std::move(wagon));
+            seats_ += wagon_seats;
+        }
+        return *this;
+    }
+
+    const Wagon& operator[](std::size_t index) const noexcept {
+        assert(index < wagons_.size());
+        return wagons_[index];
+    }
+
+    std::size_t seats() const noexcept {
+        return seats_;
+    }
+
+    std::size_t capacity() const noexcept {
+        return locomotive_.max_wagons();
+    }
+
+    std::size_t size() const noexcept {
+        return wagons_.size();
+    }
+    
+    const Locomotive& locomotive() const noexcept {
+        return locomotive_;
+    }
+
+    explicit operator bool() const noexcept {
+        return static_cast<bool>(locomotive_);
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, 
+        const Train& train) {
+
+        os << "Skład: " << train.locomotive_;
+        for (const Wagon& wagon : train.wagons_) {
+            os << "\n\t" << wagon;
+        }
+        return os;
+    }
+
+private:
+    Locomotive locomotive_;
+    std::vector<Wagon> wagons_;
+    std::size_t seats_ = 0; 
 };
 
 class Depot {
