@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <ostream>
 #include <string_view>
+#include <compare>
 
 enum class WagonType {
     FIRST_CLASS,
@@ -83,7 +84,120 @@ inline constexpr WagonSeries STANDARD_DINING = WagonType::DINING;
 
 
 class Wagon {
-    // TODO
+public:
+    using unique_id_t = std::size_t;
+
+    Wagon() : number_(0), series_(STANDARD_SECOND_CLASS) {}
+
+    explicit Wagon(const WagonSeries& wagon_series) 
+            : number_(next_id_++),
+            series_(wagon_series) {
+        ++in_service_;
+    }
+
+    Wagon(const Wagon& other) 
+            : number_(other.number_ == 0 ? 0 : next_id_++),
+            series_(other.number_ == 0 ? STANDARD_SECOND_CLASS : other.series_) {
+        if (other.number_ != 0) {
+            ++in_service_;
+        }
+    }
+
+    Wagon (Wagon&& other) 
+            : number_(other.number_), series_(other.series_) {
+        other.number_ = 0;
+    }
+
+    ~Wagon() {
+        if (number_ != 0) {
+            --in_service_;
+        }
+    }
+
+    Wagon& operator=(const Wagon& other) {
+        // If both are empty then we don't do anything.
+        if (number_ == 0 && other.number_ == 0) {
+            return *this;
+        }
+
+        // If other is empty then the wagon ceases to exist.
+        if (other.number_ == 0) {
+            number_ = 0;
+            --in_service_;
+            return *this;
+        }
+
+        // If wagon is empty then we built new wagon.
+        if (number_ == 0) {
+            number_ = next_id_++;
+            series_ = other.series_;
+            ++in_service_;
+            return *this;
+        }
+
+        // If both wagon and other exist then we rebuild the wagon.
+        series_ = other.series_;
+        return *this;
+    }
+
+    Wagon& operator=(Wagon&& other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        if (number_ != 0) {
+            --in_service_;
+        }
+        number_ = other.number_;
+        series_ = other.series_;
+        other.number_ = 0;
+        return *this;
+    }
+
+    bool operator==(const Wagon& other) const {
+        return number_ == other.number_;
+    }
+
+    std::strong_ordering operator<=>(const Wagon& other) const {
+        return number_ <=> other.number_;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Wagon& wagon) {
+        if (wagon.number_ == 0) {
+            return os << "Wagon pusty";
+        }
+        return os << "Wagon nr " << wagon.number_ << " " << wagon.series_;
+    }
+
+    operator WagonSeries() const {
+        return series_;
+    }
+
+    explicit operator bool() const {
+        return number_ != 0;
+    }
+
+    unique_id_t number() const {
+        return number_;
+    }
+
+    WagonSeries series() const {
+        return series_;
+    }
+
+    static std::size_t in_service() {
+        return in_service_;
+    }
+
+    static std::size_t ever_built() {
+        return next_id_ - 1;
+    }
+
+private:
+    unique_id_t number_;
+    WagonSeries series_;
+    inline static constinit unique_id_t next_id_ = 1;
+    inline static constinit std::size_t in_service_ = 0;
 };
 
 class Locomotive {
