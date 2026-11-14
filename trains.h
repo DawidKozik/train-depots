@@ -4,7 +4,10 @@
 #include <string>
 #include <compare>
 #include <utility>
-#include <deque>
+#include <algorithm>
+#include <cassert>
+#include <initializer_list>
+#include <vector>
 
 enum class WagonType {
     FIRST_CLASS,
@@ -243,11 +246,15 @@ public:
         return !designation_.empty();
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Locomotive& locomotive) {
+    friend std::ostream& operator<<(
+        std::ostream& os, 
+        const Locomotive& locomotive) {
+
         if (locomotive.designation_.empty()){
             return os << "brak lokomotywy";
         }
-        return os << locomotive.designation_ << " (uciąg: " << locomotive.max_wagons_ << ")";
+        return os << locomotive.designation_ << 
+            " (uciąg: " << locomotive.max_wagons_ << ")";
     }
 private:
     std::string designation_;
@@ -257,18 +264,90 @@ private:
 class Train {
 public:
     Train() = default;
-    explicit Train(Locomotive&& locomotive)
-            : locomotive_(std::move(locomotive), ) {}
 
-    explicit Train(Locomotive&& locomotive, std::initializer_list<Wagon> wagons)
+    explicit Train(Locomotive&& locomotive, 
+        std::initializer_list<Wagon> wagons = {})
             : locomotive_(std::move(locomotive)) {
-                while (wagons_.size() < locomotive_.designation()) {
+        wagons_.reserve(std::min(wagons.size(), locomotive_.max_wagons()));
+        for (const auto& wagon : wagons) {
+            *this += wagon;
+        }
+    }
 
-                }
-            }
+    Train(Train&& other) noexcept
+            : locomotive_(std::move(other.locomotive_)),
+            wagons_(std::move(other.wagons_)),
+            seats_(std::exchange(other.seats_, 0)) {}
+    
+    Train& operator=(Train&& other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+
+        locomotive_ = std::move(other.locomotive_);
+        wagons_ = std::move(other.wagons_);
+        seats_ = std::exchange(other.seats_, 0);
+        return *this;
+    }
+
+    Train& operator+=(const Wagon& wagon) {
+        if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
+            wagons_.push_back(wagon);
+            seats_ += wagon.series().seats();
+        }
+        return *this;
+    }
+
+    Train& operator+=(Wagon&& wagon) {
+        if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
+            const std::size_t wagon_seats = wagon.series().seats();
+            wagons_.push_back(std::move(wagon));
+            seats_ += wagon_seats;
+        }
+        return *this;
+    }
+
+    const Wagon& operator[](std::size_t index) const noexcept {
+        assert(index < wagons_.size());
+        return wagons_[index];
+    }
+
+    std::size_t seats() const noexcept {
+        return seats_;
+    }
+
+    std::size_t capacity() const noexcept {
+        return locomotive_.max_wagons();
+    }
+
+    std::size_t size() const noexcept {
+        return wagons_.size();
+    }
+    
+    const Locomotive& locomotive() const noexcept {
+        return locomotive_;
+    }
+
+    explicit operator bool() const noexcept {
+        return static_cast<bool>(locomotive_);
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, 
+        const Train& train) {
+
+        os << "Skład: " << train.locomotive_;
+        for (const Wagon& wagon : train.wagons_) {
+            os << "\n\t" << wagon;
+        }
+        return os;
+    }
+
+    Train(const Train&) = delete;
+    Train& operator=(const Train&) = delete;
+
 private:
     Locomotive locomotive_;
-    std::deque<Wagon> wagons_;
+    std::vector<Wagon> wagons_;
     std::size_t seats_ = 0; 
 };
 
