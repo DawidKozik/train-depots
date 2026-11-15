@@ -240,7 +240,7 @@ public:
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Locomotive& locomotive) {
-        if (locomotive.designation_.empty()){
+        if (locomotive.designation_.empty()) {
             return os << "brak lokomotywy";
         }
         return os << locomotive.designation_ << " (uciąg: " << locomotive.max_wagons_ << ")";
