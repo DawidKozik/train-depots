@@ -447,12 +447,10 @@ inline Depot& main_depot() {
 
 class Dispatcher {
 public:
-    // Standard constructors
     Dispatcher() : depot_(main_depot()) {}
     explicit Dispatcher(Depot& depot) noexcept : depot_(depot) {}
     Dispatcher(const Dispatcher&) noexcept = default;
 
-    // Disabling copy assignment
     Dispatcher& operator=(const Dispatcher&) = delete;
 
     const Depot& yard() const noexcept {
