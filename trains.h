@@ -58,12 +58,12 @@ public:
 
     WagonSeries& operator=(WagonSeries&& other) = default;
 
-    constexpr bool operator==(const WagonSeries& other) const {
+    constexpr bool operator==(const WagonSeries& other) const noexcept{
         return wagon_type == other.wagon_type
             && number_of_seats == other.number_of_seats;
     }
 
-    constexpr bool operator!=(const WagonSeries& other) const {
+    constexpr bool operator!=(const WagonSeries& other) const noexcept{
         return !(*this == other);
     }
 
@@ -109,7 +109,7 @@ public:
         }
     }
 
-    Wagon (Wagon&& other) 
+    Wagon (Wagon&& other) noexcept
             : number_(other.number_), series_(other.series_) {
         other.number_ = 0;
     }
