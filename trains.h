@@ -446,5 +446,39 @@ inline Depot& main_depot() {
 }
 
 class Dispatcher {
-    // TODO
+public:
+    // Standard constructors
+    Dispatcher() : depot_(main_depot()) {}
+    explicit Dispatcher(Depot& depot) noexcept : depot_(depot) {}
+    Dispatcher(const Dispatcher&) noexcept = default;
+
+    // Disabling copy assignment
+    Dispatcher& operator=(const Dispatcher&) = delete;
+
+    const Depot& yard() const noexcept {
+        return depot_;
+    }
+
+    Train assemble(const WagonSeries& series, std::size_t demanded_count) {
+        // Optimisation avoiding linear search for wagons count
+        if (depot_.locomotives() == 0) { 
+            return {}; 
+        }
+
+        Train created_train(depot_.release_locomotive());
+        // Limit stopping for-loop if it collected enough wagons or there is
+        // no more wagons of demanded series or the locomotive can't carry more
+        const std::size_t limit = std::min({
+            demanded_count,
+            created_train.capacity(),
+            depot_.wagons(series)
+        });
+        for (std::size_t i = 0; i < limit; ++i) {
+            created_train += depot_.release_wagon(series);
+        }
+        
+        return created_train;
+    }
+private:
+    Depot& depot_;
 };
