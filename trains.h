@@ -249,7 +249,7 @@ public:
         std::ostream& os, 
         const Locomotive& locomotive) {
 
-        if (locomotive.designation_.empty()){
+        if (locomotive.designation_.empty()) {
             return os << "brak lokomotywy";
         }
         return os << locomotive.designation_ << 
