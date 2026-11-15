@@ -29,7 +29,7 @@ public:
             : wagon_type_(wagon_type), number_of_seats_(number_of_seats) {}
 
     constexpr WagonSeries(WagonType wagon_type)
-            : WagonSeries(wagon_type_, get_default_seats(wagon_type)) {}
+            : WagonSeries(wagon_type, get_default_seats(wagon_type)) {}
 
     WagonSeries(const WagonSeries& other) = default;
 
