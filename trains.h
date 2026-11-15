@@ -25,7 +25,7 @@ class WagonSeries {
 public:
     WagonSeries() = delete;
 
-    constexpr WagonSeries(WagonType wagon_type, std::size_t number_of_seats) 
+    explicit constexpr WagonSeries(WagonType wagon_type, std::size_t number_of_seats) 
             : wagon_type_(wagon_type), number_of_seats_(number_of_seats) {}
 
     constexpr WagonSeries(WagonType wagon_type)
