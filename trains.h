@@ -8,6 +8,8 @@
 #include <cassert>
 #include <initializer_list>
 #include <vector>
+#include <queue>
+#include <list>
 
 enum class WagonType {
     FIRST_CLASS,
@@ -361,8 +363,89 @@ private:
 };
 
 class Depot {
-    // TODO
+public:
+    Depot() = default;
+
+    Depot(const Depot&) = delete;
+    Depot& operator=(const Depot&) = delete;
+
+    Depot& operator+=(Locomotive&& locomotive) {
+        if (locomotive) {
+            locomotives_.push(std::move(locomotive));
+        }
+        return *this;
+    }
+
+    Depot& operator+=(Wagon&& wagon) {
+        if (wagon) {
+            wagons_.push_back(std::move(wagon));
+        }
+        return *this;
+    }
+
+    Locomotive release_locomotive() noexcept {
+        if (locomotives_.empty()) {
+            return {};
+        }
+        Locomotive released_locomotive(std::move(locomotives_.front()));
+        locomotives_.pop();
+        return released_locomotive;
+    }
+
+    Wagon release_wagon(const WagonSeries& series) noexcept {
+        auto matching_wagon = std::find_if(wagons_.begin(), wagons_.end(), 
+        [&series](const Wagon& wagon) {
+            return wagon.series() == series;
+        });
+        if (matching_wagon == wagons_.end()) {
+            return {};
+        }
+        Wagon released_wagon(std::move(*matching_wagon));
+        wagons_.erase(matching_wagon);
+        return released_wagon;
+    }
+
+    std::size_t locomotives() const noexcept {
+        return locomotives_.size();
+    }
+
+    std::size_t wagons() const noexcept {
+        return wagons_.size();
+    }
+
+    std::size_t wagons(const WagonSeries& series) const noexcept{
+        return static_cast<std::size_t>(
+            std::count_if(wagons_.begin(), wagons_.end(), 
+            [&series](const Wagon& wagon) {
+                return wagon.series() == series;
+            }));
+
+        
+    }
+
+private:
+    std::queue<Locomotive> locomotives_; 
+    std::list<Wagon> wagons_; 
 };
+
+Depot& main_depot() {
+    static Depot depot;
+    static const bool initialized = []() {
+        depot += Locomotive("EU07-001", 8);
+        depot += Locomotive("EP09-020", 12);
+        depot += Wagon(STANDARD_FIRST_CLASS);
+        depot += Wagon(STANDARD_SECOND_CLASS);
+        depot += Wagon(STANDARD_SECOND_CLASS);
+        depot += Wagon(STANDARD_SECOND_CLASS);
+        depot += Wagon(STANDARD_SECOND_CLASS);
+        depot += Wagon(STANDARD_SLEEPER);
+        depot += Wagon(STANDARD_SLEEPER);
+        depot += Wagon(STANDARD_DINING);
+        return true;
+    }();
+    (void)initialized;
+    return depot;
+}
 
 class Dispatcher {
     // TODO
