@@ -287,7 +287,7 @@ public:
     Train(const Train&) = delete;
     Train& operator=(const Train&) = delete;
 
-    // If the += operator recived an lvalue, then it attaches a copy of the wagon.
+    // If the += operator received an lvalue, then it attaches a copy of the wagon.
     Train& operator+=(const Wagon& wagon) {
         // Check whether attaching the wagon is possible
         if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
@@ -297,7 +297,7 @@ public:
         return *this;
     }
 
-    // If the += operator recived an rvalue, then it moves the wagon.
+    // If the += operator received an rvalue, then it moves the wagon.
     Train& operator+=(Wagon&& wagon) {
         // Check whether attaching the wagon is possible
         if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
