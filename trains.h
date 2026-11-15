@@ -91,7 +91,7 @@ class Wagon {
 public:
     using unique_id_t = std::size_t;
 
-    Wagon() : number_(0), series_(STANDARD_SECOND_CLASS) {}
+    Wagon() = default;
 
     explicit Wagon(const WagonSeries& wagon_series) 
             : number_(next_id_++),
@@ -108,9 +108,7 @@ public:
     }
 
     Wagon (Wagon&& other) noexcept
-            : number_(other.number_), series_(other.series_) {
-        other.number_ = 0;
-    }
+            : number_(std::exchange(other.number_, 0)), series_(std::move(other.series_)) {}
 
     ~Wagon() {
         if (number_ != 0) {
@@ -152,9 +150,8 @@ public:
         if (number_ != 0) {
             --in_service_;
         }
-        number_ = other.number_;
-        series_ = other.series_;
-        other.number_ = 0;
+        number_ = std::exchange(other.number_, 0);
+        series_ = std::move(other.series_);
         return *this;
     }
 
@@ -198,8 +195,8 @@ public:
     }
 
 private:
-    unique_id_t number_;
-    WagonSeries series_;
+    unique_id_t number_ = 0;
+    WagonSeries series_ = STANDARD_SECOND_CLASS;
     inline static constinit unique_id_t next_id_ = 1;
     inline static constinit std::size_t in_service_ = 0;
 };
