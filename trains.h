@@ -415,8 +415,6 @@ public:
             [&series](const Wagon& wagon) {
                 return wagon.series() == series;
             }));
-
-        
     }
 
 private:
@@ -426,6 +424,8 @@ private:
 
 inline Depot& main_depot() {
     static Depot depot;
+    // Initializing a static value with an instantly called lamba function
+    // guarantees, that the lambda function will be only called once.
     static const bool initialized = []() {
         depot += Locomotive("EU07-001", 8);
         depot += Locomotive("EP09-020", 12);
@@ -439,7 +439,9 @@ inline Depot& main_depot() {
         depot += Wagon(STANDARD_DINING);
         return true;
     }();
+    // A suppressor for "unused variable" warning.
     (void)initialized;
+
     return depot;
 }
 
