@@ -39,7 +39,7 @@ public:
 
     WagonSeries& operator=(WagonSeries&& other) = default;
 
-    constexpr bool operator==(const WagonSeries& other) const noexcept = default;
+    constexpr bool operator==(const WagonSeries& other) const = default;
 
     friend std::ostream& operator<<(
             std::ostream& os,
@@ -107,7 +107,7 @@ public:
         }
     }
 
-    Wagon(Wagon&& other) noexcept
+    Wagon(Wagon&& other)
             : number_(std::exchange(other.number_, 0)), series_(std::move(other.series_)) {}
 
     ~Wagon() {
@@ -209,11 +209,11 @@ public:
             : designation_(designation.empty() ? "?" : designation), 
             max_wagons_(max_wagons) {}
 
-    Locomotive(Locomotive&& other) noexcept 
+    Locomotive(Locomotive&& other) 
             : designation_(std::exchange(other.designation_, {})),
             max_wagons_(std::exchange(other.max_wagons_, 0)) {}
 
-    Locomotive& operator=(Locomotive&& other) noexcept { 
+    Locomotive& operator=(Locomotive&& other) { 
         if (this == &other) {
             return *this;
         }
@@ -226,15 +226,15 @@ public:
     Locomotive(const Locomotive&) = delete;
     Locomotive& operator=(const Locomotive&) = delete;
 
-    std::string_view designation() const noexcept {
+    std::string_view designation() const {
         return designation_;
     }
 
-    std::size_t max_wagons() const noexcept {
+    std::size_t max_wagons() const {
         return max_wagons_;
     }
 
-    explicit operator bool() const noexcept {
+    explicit operator bool() const {
         return !designation_.empty();
     }
 
@@ -268,12 +268,12 @@ public:
         }
     }
 
-    Train(Train&& other) noexcept
+    Train(Train&& other)
             : locomotive_(std::move(other.locomotive_)),
             wagons_(std::move(other.wagons_)),
             seats_(std::exchange(other.seats_, 0)) {}
     
-    Train& operator=(Train&& other) noexcept {
+    Train& operator=(Train&& other) {
         if (this == &other) {
             return *this;
         }
@@ -309,28 +309,28 @@ public:
     }
 
     // Returns n-th wagon.
-    const Wagon& operator[](std::size_t index) const noexcept {
+    const Wagon& operator[](std::size_t index) const {
         assert(index < wagons_.size());
         return wagons_[index];
     }
 
-    std::size_t seats() const noexcept {
+    std::size_t seats() const {
         return seats_;
     }
 
-    std::size_t capacity() const noexcept {
+    std::size_t capacity() const {
         return locomotive_.max_wagons();
     }
 
-    std::size_t size() const noexcept {
+    std::size_t size() const {
         return wagons_.size();
     }
     
-    const Locomotive& locomotive() const noexcept {
+    const Locomotive& locomotive() const {
         return locomotive_;
     }
 
-    explicit operator bool() const noexcept {
+    explicit operator bool() const {
         return static_cast<bool>(locomotive_);
     }
 
@@ -371,7 +371,7 @@ public:
         return *this;
     }
 
-    Locomotive release_locomotive() noexcept {
+    Locomotive release_locomotive() {
         if (locomotives_.empty()) {
             return {};
         }
@@ -380,7 +380,7 @@ public:
         return released_locomotive;
     }
 
-    Wagon release_wagon(const WagonSeries& series) noexcept {
+    Wagon release_wagon(const WagonSeries& series) {
         // Finds iterator for first matching wagon in the depot
         // based on its series.
         auto matching_wagon = std::find_if(wagons_.begin(), wagons_.end(), 
@@ -396,15 +396,15 @@ public:
         return released_wagon;
     }
 
-    std::size_t locomotives() const noexcept {
+    std::size_t locomotives() const {
         return locomotives_.size();
     }
 
-    std::size_t wagons() const noexcept {
+    std::size_t wagons() const {
         return wagons_.size();
     }
 
-    std::size_t wagons(const WagonSeries& series) const noexcept {
+    std::size_t wagons(const WagonSeries& series) const {
         return static_cast<std::size_t>(
             std::count_if(wagons_.begin(), wagons_.end(), 
             [&series](const Wagon& wagon) {
@@ -443,12 +443,12 @@ inline Depot& main_depot() {
 class Dispatcher {
 public:
     Dispatcher() : depot_(main_depot()) {}
-    explicit Dispatcher(Depot& depot) noexcept : depot_(depot) {}
-    Dispatcher(const Dispatcher&) noexcept = default;
+    explicit Dispatcher(Depot& depot) : depot_(depot) {}
+    Dispatcher(const Dispatcher&) = default;
 
     Dispatcher& operator=(const Dispatcher&) = delete;
 
-    const Depot& yard() const noexcept {
+    const Depot& yard() const {
         return depot_;
     }
 
