@@ -464,7 +464,7 @@ public:
         }
 
         Train created_train(depot_.release_locomotive());
-        // Limit stopping for-loop if it collected enough wagons or there is
+        // Limit stopping the for-loop if it collected enough wagons or there is
         // no more wagons of demanded series or the locomotive can't carry more
         const std::size_t limit = std::min({
             demanded_count,
