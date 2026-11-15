@@ -359,12 +359,10 @@ class Depot {
 public:
     Depot() = default;
 
-    // Disabling copying
     Depot(const Depot&) = delete;
     Depot& operator=(const Depot&) = delete;
 
     Depot& operator+=(Locomotive&& locomotive) {
-        // Doesn't add empty locomotives.
         if (locomotive) {
             locomotives_.push(std::move(locomotive));
         }
@@ -372,7 +370,6 @@ public:
     }
 
     Depot& operator+=(Wagon&& wagon) {
-        // Doesn't add empty wagons.
         if (wagon) {
             wagons_.push_back(std::move(wagon));
         }
@@ -389,12 +386,13 @@ public:
     }
 
     Wagon release_wagon(const WagonSeries& series) noexcept {
-        // Finds iterator for first matching wagon in the depot.
+        // Finds iterator for first matching wagon in the depot
+        // based on it's series.
         auto matching_wagon = std::find_if(wagons_.begin(), wagons_.end(), 
         [&series](const Wagon& wagon) {
             return wagon.series() == series;
         });
-        // Chechs if matching wagon actually exists.
+        // Chechs if the matching wagon actually exists.
         if (matching_wagon == wagons_.end()) {
             return {};
         }
