@@ -409,7 +409,7 @@ public:
         return wagons_.size();
     }
 
-    std::size_t wagons(const WagonSeries& series) const noexcept{
+    std::size_t wagons(const WagonSeries& series) const noexcept {
         return static_cast<std::size_t>(
             std::count_if(wagons_.begin(), wagons_.end(), 
             [&series](const Wagon& wagon) {
