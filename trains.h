@@ -1,3 +1,6 @@
+#ifndef TRAINS_H
+#define TRAINS_H
+
 #include <cstddef>
 #include <ostream>
 #include <string_view>
@@ -482,3 +485,5 @@ public:
 private:
     Depot& depot_;
 };
+
+#endif // TRAINS_H
