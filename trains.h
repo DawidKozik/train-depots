@@ -39,14 +39,7 @@ public:
 
     WagonSeries& operator=(WagonSeries&& other) = default;
 
-    constexpr bool operator==(const WagonSeries& other) const noexcept{
-        return wagon_type_ == other.wagon_type_
-            && number_of_seats_ == other.number_of_seats_;
-    }
-
-    constexpr bool operator!=(const WagonSeries& other) const noexcept{
-        return !(*this == other);
-    }
+    constexpr bool operator==(const WagonSeries& other) const noexcept = default;
 
     friend std::ostream& operator<<(
             std::ostream& os,
