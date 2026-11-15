@@ -204,14 +204,12 @@ private:
 
 class Locomotive {
 public:
-    // Standard constructors
     Locomotive() = default;
 
     explicit Locomotive(std::string_view designation, std::size_t max_wagons)
             : designation_(designation.empty() ? "?" : designation), 
             max_wagons_(max_wagons) {}
 
-    // Moving constructor and assingning operator
     Locomotive(Locomotive&& other) noexcept 
             : designation_(std::exchange(other.designation_, {})),
             max_wagons_(std::exchange(other.max_wagons_, 0)) {}
@@ -226,7 +224,6 @@ public:
         return *this;
     }
 
-    // Disabling copying
     Locomotive(const Locomotive&) = delete;
     Locomotive& operator=(const Locomotive&) = delete;
 
