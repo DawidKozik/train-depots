@@ -260,10 +260,8 @@ private:
 
 class Train {
 public:
-    // Standard empty constructor
     Train() = default;
 
-    // Constructor with locomotive and wagons
     explicit Train(Locomotive&& locomotive, 
         std::initializer_list<Wagon> wagons = {})
             : locomotive_(std::move(locomotive)) {
@@ -273,13 +271,11 @@ public:
         }
     }
 
-    // Moving constructor
     Train(Train&& other) noexcept
             : locomotive_(std::move(other.locomotive_)),
             wagons_(std::move(other.wagons_)),
             seats_(std::exchange(other.seats_, 0)) {}
     
-    // Moving assigning operator
     Train& operator=(Train&& other) noexcept {
         if (this == &other) {
             return *this;
@@ -291,11 +287,10 @@ public:
         return *this;
     }
 
-    // Disabling copying
     Train(const Train&) = delete;
     Train& operator=(const Train&) = delete;
 
-    // Adding wagons to the train for rvalue
+    // If the += operator recived a lvalue, then it attaches a copy of the wagon.
     Train& operator+=(const Wagon& wagon) {
         // Check whether attaching the wagon is possible
         if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
@@ -305,7 +300,7 @@ public:
         return *this;
     }
 
-    // Adding wagons to the train for lvalue
+    // If the += operator recived a rvalue, then it moves the wagon.
     Train& operator+=(Wagon&& wagon) {
         // Check whether attaching the wagon is possible
         if (locomotive_ && wagon && wagons_.size() < locomotive_.max_wagons()) {
@@ -316,6 +311,7 @@ public:
         return *this;
     }
 
+    // Returns n-th wagon.
     const Wagon& operator[](std::size_t index) const noexcept {
         assert(index < wagons_.size());
         return wagons_[index];
