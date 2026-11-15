@@ -392,7 +392,7 @@ public:
 
     Wagon release_wagon(const WagonSeries& series) noexcept {
         // Finds iterator for first matching wagon in the depot
-        // based on it's series.
+        // based on its series.
         auto matching_wagon = std::find_if(wagons_.begin(), wagons_.end(), 
         [&series](const Wagon& wagon) {
             return wagon.series() == series;
