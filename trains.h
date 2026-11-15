@@ -397,7 +397,7 @@ public:
         [&series](const Wagon& wagon) {
             return wagon.series() == series;
         });
-        // Chechs if the matching wagon actually exists.
+        // Checks if the matching wagon actually exists.
         if (matching_wagon == wagons_.end()) {
             return {};
         }
@@ -429,7 +429,7 @@ private:
 
 inline Depot& main_depot() {
     static Depot depot;
-    // Initializing a static value with an instantly called lamba function
+    // Initializing a static value with an instantly called lambda function
     // guarantees, that the lambda function will be only called once.
     static const bool initialized = []() {
         depot += Locomotive("EU07-001", 8);
