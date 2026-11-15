@@ -129,7 +129,7 @@ public:
             return *this;
         }
 
-        // If wagon is empty then we built new wagon.
+        // If wagon is empty then we build new wagon.
         if (number_ == 0) {
             number_ = next_id_++;
             series_ = other.series_;
