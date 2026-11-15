@@ -269,6 +269,9 @@ public:
             : locomotive_(std::move(locomotive)) {
         for (const auto& wagon : wagons) {
             *this += wagon;
+            if (wagons_.size() >= locomotive_.max_wagons()) {
+                break;
+            }
         }
     }
 
