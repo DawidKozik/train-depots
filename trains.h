@@ -65,7 +65,7 @@ private:
             case WagonType::FIRST_CLASS: return 54;
             case WagonType::SECOND_CLASS: return 80;
             case WagonType::SLEEPER: return 30;
-            case WagonType:: DINING: return 32;
+            case WagonType::DINING: return 32;
         }
         return 0;
     }
