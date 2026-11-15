@@ -108,7 +108,7 @@ public:
 
     Wagon(const Wagon& other) 
             : number_(other.number_ == 0 ? 0 : next_id_++),
-            series_(other.number_ == 0 ? STANDARD_SECOND_CLASS : other.series_) {
+            series_(other.series_) {
         if (other.number_ != 0) {
             ++in_service_;
         }
