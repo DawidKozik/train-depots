@@ -424,7 +424,7 @@ private:
     std::list<Wagon> wagons_; 
 };
 
-Depot& main_depot() {
+inline Depot& main_depot() {
     static Depot depot;
     static const bool initialized = []() {
         depot += Locomotive("EU07-001", 8);
