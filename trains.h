@@ -22,9 +22,50 @@ enum class WagonType {
 };
 
 class WagonSeries {
+public:
+    WagonSeries() = delete;
+
+    constexpr WagonSeries(WagonType wagon_type, std::size_t number_of_seats) 
+            : wagon_type_(wagon_type), number_of_seats_(number_of_seats) {}
+
+    constexpr WagonSeries(WagonType wagon_type)
+            : WagonSeries(wagon_type_, get_default_seats(wagon_type)) {}
+
+    WagonSeries(const WagonSeries& other) = default;
+
+    WagonSeries(WagonSeries&& other) = default;
+
+    WagonSeries& operator=(const WagonSeries& other) = default;
+
+    WagonSeries& operator=(WagonSeries&& other) = default;
+
+    constexpr bool operator==(const WagonSeries& other) const noexcept{
+        return wagon_type_ == other.wagon_type_
+            && number_of_seats_ == other.number_of_seats_;
+    }
+
+    constexpr bool operator!=(const WagonSeries& other) const noexcept{
+        return !(*this == other);
+    }
+
+    friend std::ostream& operator<<(
+            std::ostream& os,
+            const WagonSeries& wagon_series) {
+        return os << "[" << type_to_string(wagon_series.wagon_type_)
+                << ", miejsca: " << wagon_series.number_of_seats_ << "]";
+    }
+
+    constexpr WagonType type() const {
+        return wagon_type_;
+    }
+
+    constexpr std::size_t seats() const {
+        return number_of_seats_;
+    }
+
 private:
-    WagonType wagon_type;
-    std::size_t number_of_seats;
+    WagonType wagon_type_;
+    std::size_t number_of_seats_;
 
     static constexpr std::size_t get_default_seats(WagonType wagon_type) {
         switch (wagon_type) {
@@ -44,47 +85,6 @@ private:
             case WagonType::DINING: return "restauracyjny";
         }
         return "";
-    }
-
-public:
-    WagonSeries() = delete;
-
-    constexpr WagonSeries(WagonType wagon_type, std::size_t number_of_seats) 
-            : wagon_type(wagon_type), number_of_seats(number_of_seats) {}
-
-    constexpr WagonSeries(WagonType wagon_type)
-            : WagonSeries(wagon_type, get_default_seats(wagon_type)) {}
-
-    WagonSeries(const WagonSeries& other) = default;
-
-    WagonSeries(WagonSeries&& other) = default;
-
-    WagonSeries& operator=(const WagonSeries& other) = default;
-
-    WagonSeries& operator=(WagonSeries&& other) = default;
-
-    constexpr bool operator==(const WagonSeries& other) const noexcept{
-        return wagon_type == other.wagon_type
-            && number_of_seats == other.number_of_seats;
-    }
-
-    constexpr bool operator!=(const WagonSeries& other) const noexcept{
-        return !(*this == other);
-    }
-
-    friend std::ostream& operator<<(
-            std::ostream& os,
-            const WagonSeries& wagon_series) {
-        return os << "[" << type_to_string(wagon_series.wagon_type)
-                << ", miejsca: " << wagon_series.number_of_seats << "]";
-    }
-
-    constexpr WagonType type() const {
-        return wagon_type;
-    }
-
-    constexpr std::size_t seats() const {
-        return number_of_seats;
     }
 };
 
