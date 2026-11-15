@@ -107,7 +107,7 @@ public:
         }
     }
 
-    Wagon (Wagon&& other) noexcept
+    Wagon(Wagon&& other) noexcept
             : number_(std::exchange(other.number_, 0)), series_(std::move(other.series_)) {}
 
     ~Wagon() {
