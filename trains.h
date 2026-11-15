@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <cassert>
 #include <initializer_list>
-#include <vector>
+#include <deque>
 #include <queue>
 #include <list>
 
@@ -267,7 +267,6 @@ public:
     explicit Train(Locomotive&& locomotive, 
         std::initializer_list<Wagon> wagons = {})
             : locomotive_(std::move(locomotive)) {
-        wagons_.reserve(std::min(wagons.size(), locomotive_.max_wagons()));
         for (const auto& wagon : wagons) {
             *this += wagon;
         }
@@ -351,7 +350,7 @@ public:
 
 private:
     Locomotive locomotive_;
-    std::vector<Wagon> wagons_;
+    std::deque<Wagon> wagons_;
     std::size_t seats_ = 0; 
 };
 
